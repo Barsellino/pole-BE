@@ -119,6 +119,7 @@ class GameStateService:
 
     def start_turn(self, player: Player) -> Dict[str, Any]:
         """аналог startTurn(p: Player)"""
+        print(f"▶️ START_TURN called! Player {player}, Session {self.session.id}")
         next_idx = self._next_image_index()
 
         self.state["activePlayer"] = player
@@ -141,6 +142,7 @@ class GameStateService:
         - якщо в нього ще є час → startTurn(next)
         - інакше pauseAll()
         """
+        print(f"✅ CORRECT called! Session {self.session.id}")
         active = self.state.get("activePlayer", "A")
         next_player: Player = "B" if active == "A" else "A"
 
@@ -161,6 +163,7 @@ class GameStateService:
         - переключаємо картинку
         - якщо час у активного закінчився → pauseAll()
         """
+        print(f"⚠️ PASS_OR_WRONG called! Session {self.session.id}")
         penalty = 3
         active = self.state.get("activePlayer", "A")
         timeA = int(self.state.get("timeA", 0))
@@ -198,11 +201,14 @@ class GameStateService:
         active = self.state.get("activePlayer", "A")
         timeA = int(self.state.get("timeA", 0))
         timeB = int(self.state.get("timeB", 0))
+        
+        print(f"🔥 tick_once BEFORE: active={active}, A={timeA}, B={timeB}")
 
         # --- Тікає активний гравець ---
         if active == "A":
             nextA = max(0, timeA - 1)
             self.state["timeA"] = nextA
+            print(f"🔥 tick_once: A {timeA} → {nextA}")
 
             # Якщо час закінчився → гра зупиняється
             if nextA == 0:
@@ -211,6 +217,7 @@ class GameStateService:
         else:
             nextB = max(0, timeB - 1)
             self.state["timeB"] = nextB
+            print(f"🔥 tick_once: B {timeB} → {nextB}")
 
             if nextB == 0:
                 self.state["running"] = False
