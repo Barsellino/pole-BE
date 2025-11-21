@@ -1,10 +1,11 @@
 import asyncio
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware  # <-- додали
+
 from db import Base, engine
 
 from api.ws.tick_manager import tick_manager
-
 from models.session import GameSession  # noqa: F401
 
 # ROUTES
@@ -14,6 +15,20 @@ from api.routers.topics import router as topics_router
 
 
 app = FastAPI(title="Game API", version="1.0.0")
+
+# CORS налаштування
+allowed_origins = [
+    "http://localhost:4200",          # локальний фронт
+    "https://pole-fe.vercel.app",    # приклад прод-фронта
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.on_event("startup")
@@ -29,6 +44,8 @@ app.include_router(topics_router)
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(tick_manager.start())
+
+
 @app.get("/")
 def root():
     return {"message": "OK"}
