@@ -18,7 +18,7 @@ class TickManager:
         self.running = True
         print("⏳ TickManager STARTED")
 
-        TICK_INTERVAL = 0.9  # секунди між тиками
+        TICK_INTERVAL = 1.0  # секунди між тиками
 
         while True:
             await asyncio.sleep(TICK_INTERVAL)
@@ -31,6 +31,7 @@ class TickManager:
             for session in sessions:
                 state = session.state
                 if state and state.get("running"):
+                    print(f"⏰ Tick session {session.id}: A={state.get('timeA')}, B={state.get('timeB')}")
                     service = GameStateService(db, session)
                     new_state = service.tick_once()
                     await manager.broadcast_state(session.id, new_state)

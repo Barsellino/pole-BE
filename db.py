@@ -2,6 +2,7 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
+from core.config import settings
 
 # Завантажуємо змінні з .env
 load_dotenv()
@@ -13,8 +14,7 @@ if not DATABASE_URL:
     raise ValueError("DATABASE_URL не знайдено в .env файлі")
 
 # Створюємо двигун (engine)
-# echo=True буде виводити SQL запити в консоль (для налагодження)
-engine = create_engine(DATABASE_URL, echo=True)
+engine = create_engine(DATABASE_URL, echo=settings.debug)
 
 # Створюємо базовий клас для моделей
 Base = declarative_base()
